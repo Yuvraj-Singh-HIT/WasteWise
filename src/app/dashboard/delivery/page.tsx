@@ -5,11 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collectionGroup } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase, useUser, addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
+import { collectionGroup, serverTimestamp, doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Truck } from 'lucide-react';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 // This represents a device submitted by any user
 interface DeviceSubmission {
@@ -18,11 +21,13 @@ interface DeviceSubmission {
     uploadDate: { seconds: number, nanoseconds: number }; // Firestore timestamp
     photoUrl: string;
     deviceDetails: string;
-    status?: 'pending' | 'collected';
+    status?: 'pending' | 'collected' | 'collection-in-progress';
 }
 
 export default function DeliveryDashboardPage() {
     const firestore = useFirestore();
+    const { user, isUserLoading } = useUser();
+    const { toast } = useToast();
 
     const devicesQuery = useMemoFirebase(
         () => (firestore ? collectionGroup(firestore, 'devices') : null),
@@ -32,11 +37,39 @@ export default function DeliveryDashboardPage() {
     const { data: deviceSubmissions, isLoading } = useCollection<DeviceSubmission>(devicesQuery);
 
     const handleAcceptRequest = (submission: DeviceSubmission) => {
-        // Placeholder for future functionality
-        console.log(`Request for device "${submission.deviceDetails}" accepted by a partner.`);
-        // In the future, this will update the document status to 'collected'
-        // and assign it to the current delivery partner.
+        if (!user || !firestore) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'You must be logged in to accept requests.',
+            });
+            return;
+        }
+
+        // 1. Create a new collection request
+        const collectionRequestsRef = collection(firestore, 'collection_requests');
+        addDocumentNonBlocking(collectionRequestsRef, {
+            deviceId: submission.id,
+            userId: submission.userId,
+            deliveryPartnerId: user.uid,
+            requestDate: serverTimestamp(),
+            status: 'accepted',
+            // In a real app, payment would be handled upon physical collection
+            paymentAmount: 20 // Placeholder payment amount
+        });
+
+        // 2. Update the device's status to 'collection-in-progress'
+        const deviceRef = doc(firestore, `users/${submission.userId}/devices/${submission.id}`);
+        updateDocumentNonBlocking(deviceRef, { status: 'collection-in-progress' });
+        
+        toast({
+            title: 'Request Accepted',
+            description: `You have been assigned to collect "${submission.deviceDetails}".`,
+        });
     };
+    
+    // Filter to only show devices that are pending collection
+    const pendingSubmissions = deviceSubmissions?.filter(s => s.status === 'pending' || !s.status);
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
@@ -48,6 +81,16 @@ export default function DeliveryDashboardPage() {
                         <CardDescription>View and manage pending device collection requests.</CardDescription>
                     </CardHeader>
                     <CardContent>
+                        {!isUserLoading && !user && (
+                             <Alert>
+                                <Truck className="h-4 w-4" />
+                                <AlertTitle>Become a Partner!</AlertTitle>
+                                <AlertDescription>
+                                    <Link href="/login" className="font-bold underline">Sign in or create an account</Link> to start accepting collection jobs.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -69,7 +112,7 @@ export default function DeliveryDashboardPage() {
                                     </TableRow>
                                 ))}
 
-                                {!isLoading && deviceSubmissions?.map((submission) => (
+                                {!isLoading && pendingSubmissions?.map((submission) => (
                                     <TableRow key={submission.id}>
                                         <TableCell>
                                             <Image src={submission.photoUrl} alt="Device" width={64} height={64} className="rounded-md object-cover" />
@@ -84,21 +127,21 @@ export default function DeliveryDashboardPage() {
                                         <TableCell className="text-right">
                                             <Button 
                                                 onClick={() => handleAcceptRequest(submission)}
-                                                disabled={submission.status === 'collected'}
+                                                disabled={isUserLoading || !user || submission.status === 'collection-in-progress'}
                                             >
-                                                Accept Request
+                                                {submission.status === 'collection-in-progress' ? 'Accepted' : 'Accept Request'}
                                             </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                         {!isLoading && (!deviceSubmissions || deviceSubmissions.length === 0) && (
+                         {!isLoading && (!pendingSubmissions || pendingSubmissions.length === 0) && (
                             <div className="text-center py-16 border-2 border-dashed border-muted-foreground/30 rounded-lg">
                                 <Truck className="mx-auto h-12 w-12 text-muted-foreground" />
                                 <h3 className="mt-4 text-lg font-semibold">No Pending Requests</h3>
                                 <p className="mt-2 text-sm text-muted-foreground">
-                                    There are currently no devices submitted for collection.
+                                    There are currently no devices submitted for collection. Check back soon!
                                 </p>
                             </div>
                         )}

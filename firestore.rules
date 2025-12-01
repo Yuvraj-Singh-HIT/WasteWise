@@ -112,10 +112,9 @@ service cloud.firestore {
      * @principle Restricts access to a user's own data tree using path-based ownership.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId);
+      allow get, update: if isOwner(userId);
       allow list: if false; // Prevent user enumeration
-      allow create: if isOwner(userId) && newDocIdMatches(userId);
-      allow update: if isOwner(userId) && isExistingDoc() && docIdIsImmutable();
+      allow create: if isOwner(userId);
       allow delete: if false; // Users cannot delete their own profiles
 
       /**
@@ -127,9 +126,10 @@ service cloud.firestore {
        */
       match /devices/{deviceId} {
         allow get: if isOwner(userId);
-        allow list: if isOwner(userId);
+        // Allow any authenticated user to list devices for the delivery dashboard
+        allow list: if isSignedIn();
         allow create: if isOwner(userId) && newOwnerFieldMatches(userId);
-        allow update: if isOwner(userId) && isExistingDoc() && ownerFieldIsImmutable();
+        allow update: if isOwner(userId) || isOwner(get(/databases/$(database)/documents/collection_requests/$(resource.id)).data.deliveryPartnerId);
         allow delete: if isOwner(userId) && isExistingDoc();
       }
     }
@@ -145,7 +145,8 @@ service cloud.firestore {
       // NOTE: Assumes the original device owner's UID is denormalized as 'userId' onto the request document.
       allow get: if isSignedIn() && (isOwner(resource.data.userId) || isOwner(resource.data.deliveryPartnerId));
       allow list: if false; // Prevent leaking all collection requests
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && get(/databases/$(database)/documents/users/$(request.auth.uid)/devices/$(request.resource.data.deviceId)) != null;
+      // Allow creation if the creator is the assigned delivery partner
+      allow create: if isSignedIn() && isOwner(request.resource.data.deliveryPartnerId);
       allow update: if isSignedIn() && isExistingDoc() && (isOwner(resource.data.userId) || isOwner(resource.data.deliveryPartnerId));
       allow delete: if isOwner(resource.data.userId) && isExistingDoc(); // Only original owner can delete
     }
@@ -223,13 +224,6 @@ service cloud.firestore {
       allow create: if false; // Must be created by a trusted backend server
       allow update: if false; // Transactions must be immutable
       allow delete: if false; // Transactions must not be deletable by users
-    }
-
-    // This rule allows any authenticated user to see all devices submitted for collection.
-    // This is necessary for the delivery partner dashboard.
-    // In a production app, you might restrict this to users with a 'delivery_partner' role.
-    match /users/{userId}/devices/{deviceId} {
-      allow list: if isSignedIn();
     }
   }
 }
