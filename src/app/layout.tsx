@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
+import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'WasteWise - Smart Waste Segregation',
-  description: 'An intelligent app to identify and help you segregate waste using computer vision.',
+  title: 'WasteWise - Recycle and Resell Phone Parts',
+  description: 'A marketplace for buying and selling recycled phone parts, connecting users with delivery partners and recycling agencies.',
 };
 
 export default function RootLayout({
@@ -14,13 +15,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <head>
+       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {children}
+        <FirebaseClientProvider>
+          {children}
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>
