@@ -127,7 +127,7 @@ service cloud.firestore {
        */
       match /devices/{deviceId} {
         allow get: if isOwner(userId);
-        allow list: if isSignedIn(); // Allow authenticated users to see all devices for collection
+        allow list: if isOwner(userId);
         allow create: if isOwner(userId) && newOwnerFieldMatches(userId);
         allow update: if isOwner(userId) && isExistingDoc() && ownerFieldIsImmutable();
         allow delete: if isOwner(userId) && isExistingDoc();
@@ -190,9 +190,9 @@ service cloud.firestore {
     match /recycled_parts/{recycledPartId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isOwner(request.resource.data.recyclingAgencyId);
-      allow update: if isOwner(resource.data.recyclingAgencyId) && isExistingDoc() && request.resource.data.recyclingAgencyId == resource.data.recyclingAgencyId;
-      allow delete: if isOwner(resource.data.recyclingAgencyId) && isExistingDoc();
+      allow create: if isSignedIn() && isOwner(request.resource.data.recyclingAgencyId);
+      allow update: if isSignedIn() && isOwner(resource.data.recyclingAgencyId) && isExistingDoc() && request.resource.data.recyclingAgencyId == resource.data.recyclingAgencyId;
+      allow delete: if isSignedIn() && isOwner(resource.data.recyclingAgencyId) && isExistingDoc();
     }
 
     /**
@@ -223,6 +223,13 @@ service cloud.firestore {
       allow create: if false; // Must be created by a trusted backend server
       allow update: if false; // Transactions must be immutable
       allow delete: if false; // Transactions must not be deletable by users
+    }
+
+    // This rule allows any authenticated user to see all devices submitted for collection.
+    // This is necessary for the delivery partner dashboard.
+    // In a production app, you might restrict this to users with a 'delivery_partner' role.
+    match /users/{userId}/devices/{deviceId} {
+      allow list: if isSignedIn();
     }
   }
 }
