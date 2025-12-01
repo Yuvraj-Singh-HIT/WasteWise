@@ -127,7 +127,7 @@ service cloud.firestore {
        */
       match /devices/{deviceId} {
         allow get: if isOwner(userId);
-        allow list: if isOwner(userId);
+        allow list: if isSignedIn(); // Allow authenticated users to see all devices for collection
         allow create: if isOwner(userId) && newOwnerFieldMatches(userId);
         allow update: if isOwner(userId) && isExistingDoc() && ownerFieldIsImmutable();
         allow delete: if isOwner(userId) && isExistingDoc();

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collectionGroup, serverTimestamp } from 'firebase/firestore';
+import { collectionGroup } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Truck } from 'lucide-react';
 import Image from 'next/image';
@@ -33,7 +33,7 @@ export default function DeliveryDashboardPage() {
 
     const handleAcceptRequest = (submission: DeviceSubmission) => {
         // Placeholder for future functionality
-        alert(`Request for device "${submission.deviceDetails}" accepted!`);
+        console.log(`Request for device "${submission.deviceDetails}" accepted by a partner.`);
         // In the future, this will update the document status to 'collected'
         // and assign it to the current delivery partner.
     };
