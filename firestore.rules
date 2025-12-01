@@ -221,7 +221,7 @@ service cloud.firestore {
     match /delivery_partner_transactions/{deliveryPartnerTransactionId} {
       allow get: if isOwner(resource.data.deliveryPartnerId);
       allow list: if false; // Allow only via queries, which rules will enforce
-      allow create: if false; // Must be created by a trusted backend server
+      allow create: if isSignedIn() && isOwner(request.resource.data.deliveryPartnerId); // Allow partner to create their own transaction
       allow update: if false; // Transactions must be immutable
       allow delete: if false; // Transactions must not be deletable by users
     }

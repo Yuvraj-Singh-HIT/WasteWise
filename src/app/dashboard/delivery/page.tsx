@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useCollection, useMemoFirebase, useUser, addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
-import { collectionGroup, serverTimestamp, doc } from 'firebase/firestore';
+import { collection, collectionGroup, serverTimestamp, doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Truck } from 'lucide-react';
 import Image from 'next/image';
@@ -46,25 +46,40 @@ export default function DeliveryDashboardPage() {
             return;
         }
 
-        // 1. Create a new collection request
+        const deviceRef = doc(firestore, `users/${submission.userId}/devices/${submission.id}`);
         const collectionRequestsRef = collection(firestore, 'collection_requests');
-        addDocumentNonBlocking(collectionRequestsRef, {
+        const transactionsRef = collection(firestore, 'delivery_partner_transactions');
+        const serviceFee = 1.50; // Example service fee per transaction
+
+        // 1. Create a new collection request
+        const collectionRequestPromise = addDocumentNonBlocking(collectionRequestsRef, {
             deviceId: submission.id,
             userId: submission.userId,
             deliveryPartnerId: user.uid,
             requestDate: serverTimestamp(),
             status: 'accepted',
-            // In a real app, payment would be handled upon physical collection
             paymentAmount: 20 // Placeholder payment amount
         });
 
         // 2. Update the device's status to 'collection-in-progress'
-        const deviceRef = doc(firestore, `users/${submission.userId}/devices/${submission.id}`);
         updateDocumentNonBlocking(deviceRef, { status: 'collection-in-progress' });
+
+        // 3. Log the service fee transaction for the delivery partner
+        collectionRequestPromise.then(docRef => {
+            if (docRef) {
+                addDocumentNonBlocking(transactionsRef, {
+                    deliveryPartnerId: user.uid,
+                    transactionDate: serverTimestamp(),
+                    transactionType: 'service fee',
+                    amount: serviceFee,
+                    collectionRequestId: docRef.id // Link transaction to the collection request
+                });
+            }
+        });
         
         toast({
             title: 'Request Accepted',
-            description: `You have been assigned to collect "${submission.deviceDetails}".`,
+            description: `You have been assigned to collect "${submission.deviceDetails}". A $${serviceFee.toFixed(2)} service fee has been applied.`,
         });
     };
     
