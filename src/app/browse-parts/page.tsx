@@ -90,9 +90,13 @@ export default function BrowsePartsPage() {
       status: 'purchased'
     }).then(() => {
         toast({
-            title: 'Purchase Successful!',
-            description: `You have purchased the ${part.name}.`,
+            title: 'Purchase Initiated!',
+            description: `Redirecting to payment for ${part.name}.`,
         });
+        
+        // Open Google Pay in a new tab to simulate payment
+        window.open('https://pay.google.com/gp/v/p', '_blank');
+
         // Here you would typically also update the part's status to 'sold'
         // and initiate the delivery process.
     });
