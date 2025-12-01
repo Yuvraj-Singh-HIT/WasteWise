@@ -3,10 +3,14 @@
 import Header from '@/components/header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import { Search, Wrench } from 'lucide-react';
+import { useCollection, useFirestore, useMemoFirebase, useUser, addDocumentNonBlocking } from '@/firebase';
+import { collection, serverTimestamp } from 'firebase/firestore';
+import { Search, Wrench, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // This matches the RecycledPart entity in backend.json
 interface RecycledPart {
@@ -19,6 +23,8 @@ interface RecycledPart {
 
 export default function BrowsePartsPage() {
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
+  const { toast } = useToast();
 
   const recycledPartsQuery = useMemoFirebase(
     () => (firestore ? collection(firestore, 'recycled_parts') : null),
@@ -26,6 +32,37 @@ export default function BrowsePartsPage() {
   );
 
   const { data: recycledParts, isLoading } = useCollection<RecycledPart>(recycledPartsQuery);
+  
+  const handleBuyNow = (part: RecycledPart) => {
+    if (!user || !firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Required',
+        description: 'You must be logged in to purchase an item.',
+      });
+      return;
+    }
+
+    const partSalesCollectionRef = collection(firestore, 'part_sales');
+    const commissionRate = 0.10; // 10% commission
+
+    addDocumentNonBlocking(partSalesCollectionRef, {
+      recycledPartId: part.id,
+      buyerId: user.uid,
+      saleDate: serverTimestamp(),
+      salePrice: part.price,
+      commissionAmount: part.price * commissionRate,
+      deliveryPartnerId: null, // To be assigned later
+      status: 'purchased'
+    }).then(() => {
+        toast({
+            title: 'Purchase Successful!',
+            description: `You have purchased the ${part.name}.`,
+        });
+        // Here you would typically also update the part's status to 'sold'
+        // and initiate the delivery process.
+    });
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -42,6 +79,16 @@ export default function BrowsePartsPage() {
             className="pl-10"
           />
         </div>
+        
+        {!isUserLoading && !user && (
+             <Alert className="mb-8">
+                <ShoppingCart className="h-4 w-4" />
+                <AlertTitle>Ready to Buy?</AlertTitle>
+                <AlertDescription>
+                    <Link href="/login" className="font-bold underline">Sign in or create an account</Link> to purchase parts.
+                </AlertDescription>
+            </Alert>
+        )}
 
         {isLoading && (
            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -62,8 +109,8 @@ export default function BrowsePartsPage() {
         {!isLoading && recycledParts && recycledParts.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {recycledParts.map((part) => (
-              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-0">
+              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+                <CardContent className="p-0 flex-grow">
                    <div className="relative w-full h-40">
                     <Image
                         src={part.photoUrl}
@@ -73,11 +120,15 @@ export default function BrowsePartsPage() {
                      />
                    </div>
                   <div className="p-4">
-                    {/* Using 'name' property from RecycledPart interface which we assume maps from 'details' */}
                     <h3 className="font-semibold text-lg">{part.name}</h3>
                     <p className="text-primary font-bold text-xl">${part.price.toFixed(2)}</p>
                   </div>
                 </CardContent>
+                <div className="p-4 pt-0">
+                  <Button className="w-full" onClick={() => handleBuyNow(part)} disabled={isUserLoading || !user}>
+                    <ShoppingCart className="mr-2 h-4 w-4" /> Buy Now
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>
