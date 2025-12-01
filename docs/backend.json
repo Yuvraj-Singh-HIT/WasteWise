@@ -1,0 +1,441 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the WasteWise platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "User's full name."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "Date and time the user registered.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "name"
+      ]
+    },
+    "Device": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Device",
+      "type": "object",
+      "description": "Represents a device uploaded by a user for recycling.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the device."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Device)"
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time the device was uploaded.",
+          "format": "date-time"
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "URL of the photo uploaded by the user.",
+          "format": "uri"
+        },
+        "deviceDetails": {
+          "type": "string",
+          "description": "Additional details about the device."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "uploadDate",
+        "photoUrl"
+      ]
+    },
+    "CollectionRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CollectionRequest",
+      "type": "object",
+      "description": "Represents a request for a delivery partner to collect a device.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the collection request."
+        },
+        "deviceId": {
+          "type": "string",
+          "description": "Reference to Device. (Relationship: Device 1:1 CollectionRequest)"
+        },
+        "deliveryPartnerId": {
+          "type": "string",
+          "description": "Reference to DeliveryPartner. (Relationship: DeliveryPartner 1:N CollectionRequest)"
+        },
+        "requestDate": {
+          "type": "string",
+          "description": "Date and time the collection was requested.",
+          "format": "date-time"
+        },
+        "collectionDate": {
+          "type": "string",
+          "description": "Date and time the device was collected.",
+          "format": "date-time"
+        },
+        "paymentAmount": {
+          "type": "number",
+          "description": "Amount paid to the user for the device."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the collection request (e.g., requested, accepted, collected, cancelled)."
+        }
+      },
+      "required": [
+        "id",
+        "deviceId",
+        "requestDate",
+        "paymentAmount",
+        "status"
+      ]
+    },
+    "DeliveryPartner": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeliveryPartner",
+      "type": "object",
+      "description": "Represents a delivery partner who collects devices.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the delivery partner."
+        },
+        "name": {
+          "type": "string",
+          "description": "Delivery partner's name."
+        },
+        "contactNumber": {
+          "type": "string",
+          "description": "Delivery partner's contact phone number."
+        },
+        "paymentDetails": {
+          "type": "string",
+          "description": "Delivery partner's payment details."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "RecyclingAgency": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "RecyclingAgency",
+      "type": "object",
+      "description": "Represents an authorized recycling agency.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the recycling agency."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the recycling agency."
+        },
+        "contactDetails": {
+          "type": "string",
+          "description": "Contact details for the recycling agency."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "RecycledPart": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "RecycledPart",
+      "type": "object",
+      "description": "Represents a recycled part from a device.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the recycled part."
+        },
+        "deviceId": {
+          "type": "string",
+          "description": "Reference to Device. (Relationship: Device 1:N RecycledPart)"
+        },
+        "recyclingAgencyId": {
+          "type": "string",
+          "description": "Reference to RecyclingAgency. (Relationship: RecyclingAgency 1:N RecycledPart)"
+        },
+        "qrCode": {
+          "type": "string",
+          "description": "Unique QR code for the part."
+        },
+        "details": {
+          "type": "string",
+          "description": "Details about the recycled part."
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "URL of the photo of the recycled part.",
+          "format": "uri"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the recycled part."
+        }
+      },
+      "required": [
+        "id",
+        "deviceId",
+        "recyclingAgencyId",
+        "qrCode",
+        "details",
+        "price"
+      ]
+    },
+    "PartSale": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PartSale",
+      "type": "object",
+      "description": "Represents the sale of a recycled part.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the part sale."
+        },
+        "recycledPartId": {
+          "type": "string",
+          "description": "Reference to RecycledPart. (Relationship: RecycledPart 1:N PartSale)"
+        },
+        "buyerId": {
+          "type": "string",
+          "description": "Reference to User who purchased the part. (Relationship: User 1:N PartSale)"
+        },
+        "saleDate": {
+          "type": "string",
+          "description": "Date and time of the sale.",
+          "format": "date-time"
+        },
+        "salePrice": {
+          "type": "number",
+          "description": "Price at which the part was sold."
+        },
+        "commissionAmount": {
+          "type": "number",
+          "description": "Commission earned on the sale."
+        },
+        "deliveryPartnerId": {
+          "type": "string",
+          "description": "Reference to the DeliveryPartner who delivered the part. (Relationship: DeliveryPartner 1:N PartSale)"
+        }
+      },
+      "required": [
+        "id",
+        "recycledPartId",
+        "buyerId",
+        "saleDate",
+        "salePrice",
+        "commissionAmount"
+      ]
+    },
+    "DeliveryPartnerTransaction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeliveryPartnerTransaction",
+      "type": "object",
+      "description": "Represents a transaction for a delivery partner using the platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transaction."
+        },
+        "deliveryPartnerId": {
+          "type": "string",
+          "description": "Reference to DeliveryPartner. (Relationship: DeliveryPartner 1:N DeliveryPartnerTransaction)"
+        },
+        "transactionDate": {
+          "type": "string",
+          "description": "Date and time of the transaction.",
+          "format": "date-time"
+        },
+        "transactionType": {
+          "type": "string",
+          "description": "Type of transaction (e.g., service fee, monthly subscription)."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount of the transaction."
+        },
+        "partSaleId": {
+          "type": "string",
+          "description": "Reference to PartSale (if the transaction is related to a part sale). (Relationship: PartSale 1:1 DeliveryPartnerTransaction)"
+        }
+      },
+      "required": [
+        "id",
+        "deliveryPartnerId",
+        "transactionDate",
+        "transactionType",
+        "amount"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles.  Path-based ownership ensures only the user can access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/devices/{deviceId}",
+        "definition": {
+          "entityName": "Device",
+          "schema": {
+            "$ref": "#/backend/entities/Device"
+          },
+          "description": "Stores devices uploaded by users. Path-based ownership ensures only the user can access their devices.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "deviceId",
+              "description": "The unique identifier of the device."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/collection_requests/{collectionRequestId}",
+        "definition": {
+          "entityName": "CollectionRequest",
+          "schema": {
+            "$ref": "#/backend/entities/CollectionRequest"
+          },
+          "description": "Stores collection requests for devices. Requires security rules to ensure only authorized delivery partners can view and update requests assigned to them.",
+          "params": [
+            {
+              "name": "collectionRequestId",
+              "description": "The unique identifier of the collection request."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/delivery_partners/{deliveryPartnerId}",
+        "definition": {
+          "entityName": "DeliveryPartner",
+          "schema": {
+            "$ref": "#/backend/entities/DeliveryPartner"
+          },
+          "description": "Stores profiles of delivery partners.  Requires security rules to protect sensitive information.",
+          "params": [
+            {
+              "name": "deliveryPartnerId",
+              "description": "The unique identifier of the delivery partner."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/recycling_agencies/{recyclingAgencyId}",
+        "definition": {
+          "entityName": "RecyclingAgency",
+          "schema": {
+            "$ref": "#/backend/entities/RecyclingAgency"
+          },
+          "description": "Stores profiles of recycling agencies.  Requires security rules to protect sensitive information.",
+          "params": [
+            {
+              "name": "recyclingAgencyId",
+              "description": "The unique identifier of the recycling agency."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/recycled_parts/{recycledPartId}",
+        "definition": {
+          "entityName": "RecycledPart",
+          "schema": {
+            "$ref": "#/backend/entities/RecycledPart"
+          },
+          "description": "Stores recycled parts from devices. Includes denormalized 'deviceId' for authorization independence.",
+          "params": [
+            {
+              "name": "recycledPartId",
+              "description": "The unique identifier of the recycled part."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/part_sales/{partSaleId}",
+        "definition": {
+          "entityName": "PartSale",
+          "schema": {
+            "$ref": "#/backend/entities/PartSale"
+          },
+          "description": "Stores sales of recycled parts. Requires security rules to manage access and commissions.",
+          "params": [
+            {
+              "name": "partSaleId",
+              "description": "The unique identifier of the part sale."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/delivery_partner_transactions/{deliveryPartnerTransactionId}",
+        "definition": {
+          "entityName": "DeliveryPartnerTransaction",
+          "schema": {
+            "$ref": "#/backend/entities/DeliveryPartnerTransaction"
+          },
+          "description": "Stores transactions for delivery partners. Requires security rules to manage transaction records and fees.",
+          "params": [
+            {
+              "name": "deliveryPartnerTransactionId",
+              "description": "The unique identifier of the delivery partner transaction."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the WasteWise platform's workflow, focusing on secure and scalable data management for device recycling and part sales.  Authorization Independence is achieved through denormalization. For example, the `RecycledParts` collection denormalizes the `deviceId`.  This eliminates the need for `get()` calls in security rules to verify device ownership when accessing recycled parts. Hierarchical paths are used for user-owned data, such as devices uploaded by users (`/users/{userId}/devices/{deviceId}`), providing a clear and secure ownership model. Segregation of data with different access needs is enforced by placing user-specific data under their respective user documents.  The design also supports required QAPs (Queries and Permissions) through structural segregation and path-based ownership.  Each collection's documents share the same security requirements, simplifying security rules.  The use of membership maps is not applicable in this context as collaborative data access is not a primary feature."
+  }
+}
