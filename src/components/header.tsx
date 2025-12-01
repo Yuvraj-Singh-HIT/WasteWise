@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Recycle, User, Truck, Building, Wrench, ScanLine } from 'lucide-react';
+import { Recycle, User, Truck, Building, Wrench, ScanLine, Cpu } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
@@ -18,6 +18,14 @@ export default function Header() {
                 <div>
                     <ScanLine className="h-5 w-5" />
                     <span className="hidden sm:inline-block ml-2">Waste Identifier</span>
+                </div>
+            </Button>
+          </Link>
+           <Link href="/circuit-analyzer">
+            <Button variant="ghost" size="sm" asChild>
+                <div>
+                    <Cpu className="h-5 w-5" />
+                    <span className="hidden sm:inline-block ml-2">Circuit Analyzer</span>
                 </div>
             </Button>
           </Link>
