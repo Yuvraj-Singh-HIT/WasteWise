@@ -143,11 +143,11 @@ export default function RecyclingAgencyDashboard() {
               />
             </div>
              <div className="space-y-2">
-                <Label htmlFor="price">3. Set Price ($)</Label>
+                <Label htmlFor="price">3. Set Price (₹)</Label>
                 <Input
                   id="price"
                   type="number"
-                  placeholder="25.99"
+                  placeholder="1500"
                   required
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}

@@ -49,7 +49,7 @@ export default function DeliveryDashboardPage() {
         const deviceRef = doc(firestore, `users/${submission.userId}/devices/${submission.id}`);
         const collectionRequestsRef = collection(firestore, 'collection_requests');
         const transactionsRef = collection(firestore, 'delivery_partner_transactions');
-        const serviceFee = 1.50; // Example service fee per transaction
+        const serviceFee = 50.00; // Example service fee per transaction in INR
 
         // 1. Create a new collection request
         const collectionRequestPromise = addDocumentNonBlocking(collectionRequestsRef, {
@@ -58,7 +58,7 @@ export default function DeliveryDashboardPage() {
             deliveryPartnerId: user.uid,
             requestDate: serverTimestamp(),
             status: 'accepted',
-            paymentAmount: 20 // Placeholder payment amount
+            paymentAmount: 500 // Placeholder payment amount in INR
         });
 
         // 2. Update the device's status to 'collection-in-progress'
@@ -79,7 +79,7 @@ export default function DeliveryDashboardPage() {
         
         toast({
             title: 'Request Accepted',
-            description: `You have been assigned to collect "${submission.deviceDetails}". A $${serviceFee.toFixed(2)} service fee has been applied.`,
+            description: `You have been assigned to collect "${submission.deviceDetails}". A ₹${serviceFee.toFixed(2)} service fee has been applied.`,
         });
     };
     

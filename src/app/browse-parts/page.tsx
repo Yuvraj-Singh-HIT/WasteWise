@@ -21,6 +21,39 @@ interface RecycledPart {
   // Other fields from your schema like deviceId, recyclingAgencyId, qrCode can be added here
 }
 
+// Simple GPay SVG icon component
+const GPayIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M10.9,10.19V13.81A2,2,0,0,1,12.87,15.8H12.9A2,2,0,0,1,14.86,13.81V10.19A2,2,0,0,0,12.9,8.2H12.87A2,2,0,0,0,10.9,10.19Z"
+      fill="#5f6368"
+    ></path>
+    <path
+      d="M9.91,12A2,2,0,0,1,8.2,10.19V10.16A2,2,0,0,1,9.88,8.2h0a2,2,0,0,1,1.71,1.91h2.23A4.2,4.2,0,0,0,9.91,6,4.2,4.2,0,0,0,5.7,10.17v.05A4.2,4.2,0,0,0,9.9,14.39a4.22,4.22,0,0,0,3.91-4.14H11.62A2,2,0,0,1,9.91,12Z"
+      fill="#ea4335"
+    ></path>
+    <path
+      d="M20.21,10.17v0A4.2,4.2,0,0,0,16.29,6a4.2,4.2,0,0,0-4,4.16H14a2,2,0,0,1,2-2,2,2,0,0,1,2,2,2,2,0,0,1-1.7,2H14.56v2.18h.27a2,2,0,0,0,2-2,2,2,0,0,0,1.94-2Z"
+      fill="#fbbc05"
+    ></path>
+    <path
+      d="M9.9,18a4.2,4.2,0,0,0,4-4.16H12.19a2,2,0,0,1-2,2,2,2,0,0,1-2-2,2,2,0,0,1,2-2h3.44a4.2,4.2,0,0,0-4,4.16v.05A4.2,4.2,0,0,0,9.9,18Z"
+      fill="#4285f4"
+    ></path>
+    <path
+      d="M9.91,6A4.2,4.2,0,0,0,6,9.88V10a2.12,2.12,0,0,0,.1.64A4.18,4.18,0,0,0,10.2,12a2,2,0,0,0,1.42-3.14A4.2,4.2,0,0,0,9.91,6Z"
+      fill="#34a853"
+    ></path>
+  </svg>
+);
+
+
 export default function BrowsePartsPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
@@ -121,12 +154,13 @@ export default function BrowsePartsPage() {
                    </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-lg">{part.name}</h3>
-                    <p className="text-primary font-bold text-xl">${part.price.toFixed(2)}</p>
+                    <p className="text-primary font-bold text-xl">₹{part.price.toFixed(2)}</p>
                   </div>
                 </CardContent>
                 <div className="p-4 pt-0">
                   <Button className="w-full" onClick={() => handleBuyNow(part)} disabled={isUserLoading || !user}>
-                    <ShoppingCart className="mr-2 h-4 w-4" /> Buy Now
+                    <GPayIcon />
+                    <span className="ml-2">Pay with GPay</span>
                   </Button>
                 </div>
               </Card>
