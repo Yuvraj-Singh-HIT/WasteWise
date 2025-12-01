@@ -3,19 +3,30 @@
 import Header from '@/components/header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { Search, Wrench } from 'lucide-react';
+import Image from 'next/image';
 
-// Mock data for recycled parts
-const recycledParts = [
-  { id: 1, name: 'iPhone 11 Screen', price: 45.99, imageUrl: 'https://picsum.photos/seed/part1/300/200' },
-  { id: 2, name: 'Samsung S20 Battery', price: 25.00, imageUrl: 'https://picsum.photos/seed/part2/300/200' },
-  { id: 3, name: 'Pixel 4a Camera Module', price: 35.50, imageUrl: 'https://picsum.photos/seed/part3/300/200' },
-  { id: 4, name: 'OnePlus 7T Charging Port', price: 18.75, imageUrl: 'https://picsum.photos/seed/part4/300/200' },
-  { id: 5, name: 'iPhone X Logic Board', price: 89.99, imageUrl: 'https://picsum.photos/seed/part5/300/200' },
-  { id: 6, name: 'Galaxy Note 10 S-Pen', price: 22.00, imageUrl: 'https://picsum.photos/seed/part6/300/200' },
-];
+// This matches the RecycledPart entity in backend.json
+interface RecycledPart {
+  id: string;
+  name: string; // I'll assume the 'details' field from the schema can be used as 'name'
+  price: number;
+  photoUrl: string;
+  // Other fields from your schema like deviceId, recyclingAgencyId, qrCode can be added here
+}
 
 export default function BrowsePartsPage() {
+  const firestore = useFirestore();
+
+  const recycledPartsQuery = useMemoFirebase(
+    () => (firestore ? collection(firestore, 'recycled_parts') : null),
+    [firestore]
+  );
+
+  const { data: recycledParts, isLoading } = useCollection<RecycledPart>(recycledPartsQuery);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -31,19 +42,56 @@ export default function BrowsePartsPage() {
             className="pl-10"
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {recycledParts.map((part) => (
-            <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-0">
-                <img src={part.imageUrl} alt={part.name} className="w-full h-40 object-cover" />
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg">{part.name}</h3>
-                  <p className="text-primary font-bold text-xl">${part.price}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+        {isLoading && (
+           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden shadow-lg">
+                <CardContent className="p-0">
+                  <div className="w-full h-40 bg-muted animate-pulse" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-6 w-3/4 bg-muted animate-pulse rounded" />
+                    <div className="h-8 w-1/2 bg-muted animate-pulse rounded" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && recycledParts && recycledParts.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {recycledParts.map((part) => (
+              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                <CardContent className="p-0">
+                   <div className="relative w-full h-40">
+                    <Image
+                        src={part.photoUrl}
+                        alt={part.name}
+                        fill
+                        className="object-cover"
+                     />
+                   </div>
+                  <div className="p-4">
+                    {/* Using 'name' property from RecycledPart interface which we assume maps from 'details' */}
+                    <h3 className="font-semibold text-lg">{part.name}</h3>
+                    <p className="text-primary font-bold text-xl">${part.price.toFixed(2)}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+        
+        {!isLoading && (!recycledParts || recycledParts.length === 0) && (
+            <div className="text-center py-16 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                <Wrench className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold">No Parts Available</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    There are currently no recycled parts listed for sale. Check back later!
+                </p>
+            </div>
+        )}
       </main>
     </div>
   );
