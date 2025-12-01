@@ -21,7 +21,8 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
-import { QRCode } from 'qrcode.react';
+import QRCode from 'qrcode.react';
+
 
 // This matches the RecycledPart entity in backend.json
 interface RecycledPart {
