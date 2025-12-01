@@ -1,3 +1,22 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "recycling-bins",
+      "description": "A set of colorful recycling bins for different materials.",
+      "imageUrl": "https://images.unsplash.com/photo-1722482445685-91a6b17d5d02?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZWN5Y2xpbmclMjBiaW5zfGVufDB8fHx8MTc2NDU1MDE2OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "recycling bins"
+    },
+    {
+      "id": "compost-pile",
+      "description": "Organic waste being composted in a garden.",
+      "imageUrl": "https://images.unsplash.com/photo-1541779123709-488a159406aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb21wb3N0JTIwZ2FyZGVufGVufDB8fHx8MTc2NDU4MDUwMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "compost garden"
+    },
+    {
+      "id": "recycled-products",
+      "description": "Products made from recycled materials.",
+      "imageUrl": "https://images.unsplash.com/photo-1557153657-54aea4f2a892?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZWN5Y2xlZCUyMHByb2R1Y3RzfGVufDB8fHx8MTc2NDU4MDUwMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "recycled products"
+    }
+  ]
 }
