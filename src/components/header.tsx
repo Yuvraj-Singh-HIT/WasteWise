@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Recycle, User, Truck, Building, Wrench } from 'lucide-react';
+import { Recycle, User, Truck, Building, Wrench, ScanLine } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
@@ -13,6 +13,14 @@ export default function Header() {
           </h1>
         </Link>
         <nav className="flex items-center gap-1 md:gap-2">
+           <Link href="/waste-identifier">
+            <Button variant="ghost" size="sm" asChild>
+                <div>
+                    <ScanLine className="h-5 w-5" />
+                    <span className="hidden sm:inline-block ml-2">Waste Identifier</span>
+                </div>
+            </Button>
+          </Link>
            <Link href="/browse-parts">
             <Button variant="ghost" size="sm" asChild>
                 <div>
