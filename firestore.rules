@@ -216,9 +216,11 @@ service cloud.firestore {
      */
     match /part_sales/{partSaleId} {
       allow get: if isSignedIn() && (isOwner(resource.data.buyerId) || isOwner(resource.data.deliveryPartnerId));
-      allow list: if false; // Prevent leaking all sales data
+      allow list: if isSignedIn(); // Allow partners to list pending deliveries
       allow create: if isOwner(request.resource.data.buyerId);
-      allow update: if isOwner(resource.data.buyerId) && isExistingDoc();
+      // Allow the buyer to update, or a delivery partner to accept the job
+      allow update: if (isOwner(resource.data.buyerId) && isExistingDoc()) || 
+                       (isSignedIn() && request.resource.data.deliveryPartnerId == request.auth.uid && resource.data.deliveryPartnerId == null);
       allow delete: if false; // Sales records should be immutable
     }
 
