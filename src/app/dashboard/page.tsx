@@ -14,12 +14,6 @@ const dashboardLinks = [
         icon: Smartphone,
     },
     {
-        href: '/dashboard/delivery',
-        title: 'Delivery Partner Hub',
-        description: 'Manage device collections and part deliveries.',
-        icon: Truck,
-    },
-    {
         href: '/dashboard/recycling',
         title: 'Recycling Agency Hub',
         description: 'List and manage salvaged parts on the marketplace.',

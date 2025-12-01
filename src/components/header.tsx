@@ -37,14 +37,6 @@ export default function Header() {
                 </div>
             </Button>
           </Link>
-          <Link href="/dashboard/delivery">
-            <Button variant="ghost" size="sm" asChild>
-                <div>
-                    <Truck className="h-5 w-5" />
-                    <span className="hidden sm:inline-block ml-2">For Partners</span>
-                </div>
-            </Button>
-          </Link>
            <Link href="/dashboard/recycling">
             <Button variant="ghost" size="sm" asChild>
                 <div>
