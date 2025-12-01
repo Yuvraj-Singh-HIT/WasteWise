@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Recycle, User } from 'lucide-react';
+import { Recycle, User, Truck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
@@ -12,14 +12,24 @@ export default function Header() {
             WasteWise
           </h1>
         </Link>
-        <Link href="/login">
-          <Button variant="outline" size="icon" asChild>
-            <div>
-              <User className="h-5 w-5" />
-              <span className="sr-only">Login</span>
-            </div>
-          </Button>
-        </Link>
+        <nav className="flex items-center gap-2">
+           <Link href="/dashboard/delivery">
+            <Button variant="ghost" size="sm" asChild>
+                <div>
+                    <Truck className="h-5 w-5" />
+                    <span className="hidden sm:inline-block ml-2">Partner Dashboard</span>
+                </div>
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button variant="outline" size="icon" asChild>
+              <div>
+                <User className="h-5 w-5" />
+                <span className="sr-only">Login</span>
+              </div>
+            </Button>
+          </Link>
+        </nav>
       </div>
     </header>
   );
