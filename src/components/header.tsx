@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Recycle, User, Truck, Building } from 'lucide-react';
+import { Recycle, User, Truck, Building, Wrench } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
@@ -16,7 +16,8 @@ export default function Header() {
            <Link href="/browse-parts">
             <Button variant="ghost" size="sm" asChild>
                 <div>
-                    <span className="hidden sm:inline-block">Browse Parts</span>
+                    <Wrench className="h-5 w-5" />
+                    <span className="hidden sm:inline-block ml-2">Browse Parts</span>
                 </div>
             </Button>
           </Link>
