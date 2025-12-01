@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
@@ -52,8 +53,8 @@ export default function Home() {
               The smart marketplace for recycled phone parts. Sell your broken devices, find genuine reusable components, and contribute to a sustainable future.
             </p>
             <div className="mt-8 flex justify-center gap-4">
-              <Button size="lg">Sell My Device</Button>
-              <Button size="lg" variant="outline">Browse Parts</Button>
+              <Button size="lg" onClick={() => console.log('Sell My Device clicked')}>Sell My Device</Button>
+              <Button size="lg" variant="outline" onClick={() => console.log('Browse Parts clicked')}>Browse Parts</Button>
             </div>
           </div>
         </section>
