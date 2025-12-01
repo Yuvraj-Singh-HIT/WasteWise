@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { CheckCircle, Recycle, Smartphone, Truck, Wrench } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   const heroImage = PlaceHolderImages.find(img => img.id === 'recycled-products');
 
   const steps = [
@@ -53,8 +55,8 @@ export default function Home() {
               The smart marketplace for recycled phone parts. Sell your broken devices, find genuine reusable components, and contribute to a sustainable future.
             </p>
             <div className="mt-8 flex justify-center gap-4">
-              <Button size="lg" onClick={() => console.log('Sell My Device clicked')}>Sell My Device</Button>
-              <Button size="lg" variant="outline" onClick={() => console.log('Browse Parts clicked')}>Browse Parts</Button>
+              <Button size="lg" onClick={() => router.push('/sell-device')}>Sell My Device</Button>
+              <Button size="lg" variant="outline" onClick={() => router.push('/browse-parts')}>Browse Parts</Button>
             </div>
           </div>
         </section>
