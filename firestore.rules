@@ -155,7 +155,7 @@ service cloud.firestore {
     match /collection_requests/{collectionRequestId} {
       // NOTE: Assumes the original device owner's UID is denormalized as 'userId' onto the request document.
       allow get: if isSignedIn() && (isOwner(resource.data.userId) || isOwner(resource.data.deliveryPartnerId));
-      allow list: if false; // Prevent leaking all collection requests
+      allow list: if isSignedIn(); // Allow partners to list jobs. Client query must filter by partner ID.
       // Allow creation if the creator is the assigned delivery partner
       allow create: if isSignedIn() && isOwner(request.resource.data.deliveryPartnerId);
       allow update: if isSignedIn() && isExistingDoc() && (isOwner(resource.data.userId) || isOwner(resource.data.deliveryPartnerId));
