@@ -58,6 +58,10 @@
         "deviceDetails": {
           "type": "string",
           "description": "Additional details about the device."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the device (e.g., pending, collection-in-progress, collected)."
         }
       },
       "required": [

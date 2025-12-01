@@ -126,12 +126,23 @@ service cloud.firestore {
        */
       match /devices/{deviceId} {
         allow get: if isOwner(userId);
-        // Allow any authenticated user to list devices for the delivery dashboard
-        allow list: if isSignedIn();
+        // This rule is for direct collection reads, not collection group queries.
+        // The collection group query is handled by the rule below.
+        allow list: if isOwner(userId); 
         allow create: if isOwner(userId) && newOwnerFieldMatches(userId);
         allow update: if isOwner(userId) || isOwner(get(/databases/$(database)/documents/collection_requests/$(resource.id)).data.deliveryPartnerId);
         allow delete: if isOwner(userId) && isExistingDoc();
       }
+    }
+
+    /**
+     * @description Rule for the 'devices' collection group query.
+     * @path /users/{userId}/devices/{deviceId}
+     * @allow Any authenticated user (a delivery partner) can list all devices across all users.
+     * @principle This enables the core functionality of the delivery dashboard.
+     */
+    match /{path=**}/devices/{deviceId} {
+      allow list: if isSignedIn();
     }
 
     /**
