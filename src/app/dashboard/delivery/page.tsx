@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 
 interface DeviceSubmission {
@@ -49,34 +49,41 @@ export default function DeliveryDashboardPage() {
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser();
     const { toast } = useToast();
+    const [isReady, setIsReady] = useState(false);
 
+    useEffect(() => {
+        if (firestore && !isUserLoading) {
+            setIsReady(true);
+        }
+    }, [firestore, isUserLoading]);
+    
     // --- QUERIES ---
     
     // 1. Get all pending device submissions for the "Available Collections" tab
     const allDevicesQuery = useMemoFirebase(
-        () => (firestore ? query(collectionGroup(firestore, 'devices'), where('status', '==', 'pending')) : null),
-        [firestore]
+        () => (isReady ? query(collectionGroup(firestore, 'devices'), where('status', '==', 'pending')) : null),
+        [isReady, firestore]
     );
     const { data: allPendingDevices, isLoading: isLoadingAllDevices } = useCollection<DeviceSubmission>(allDevicesQuery);
 
     // 2. Get collection requests assigned to the current delivery partner
     const myCollectionsQuery = useMemoFirebase(
-        () => (firestore && user?.uid ? query(collection(firestore, 'collection_requests'), where('deliveryPartnerId', '==', user.uid)) : null),
-        [firestore, user?.uid]
+        () => (isReady && user?.uid ? query(collection(firestore, 'collection_requests'), where('deliveryPartnerId', '==', user.uid)) : null),
+        [isReady, firestore, user?.uid]
     );
     const { data: myCollectionRequests, isLoading: isLoadingMyCollections } = useCollection<CollectionRequest>(myCollectionsQuery);
     
     // 3. Get all devices to enrich "My Collections" with device details
     const allDevicesForEnrichmentQuery = useMemoFirebase(
-        () => (firestore ? collectionGroup(firestore, 'devices') : null),
-        [firestore]
+        () => (isReady ? collectionGroup(firestore, 'devices') : null),
+        [isReady, firestore]
     );
     const { data: allDevicesForEnrichment, isLoading: isLoadingAllDevicesForEnrichment } = useCollection<DeviceSubmission>(allDevicesForEnrichmentQuery);
     
     // 4. Get all purchased parts for the "Available Deliveries" tab
     const partSalesQuery = useMemoFirebase(
-        () => (firestore ? query(collection(firestore, 'part_sales'), where('status', '==', 'purchased')) : null),
-        [firestore]
+        () => (isReady ? query(collection(firestore, 'part_sales'), where('status', '==', 'purchased')) : null),
+        [isReady, firestore]
     );
     const { data: availablePartSales, isLoading: isLoadingSales } = useCollection<PartSale>(partSalesQuery);
 
@@ -93,7 +100,7 @@ export default function DeliveryDashboardPage() {
     }, [myCollectionRequests, allDevicesForEnrichment]);
 
 
-    const isLoading = isUserLoading || isLoadingAllDevices || isLoadingMyCollections || isLoadingAllDevicesForEnrichment || isLoadingSales;
+    const isLoading = !isReady || isLoadingAllDevices || isLoadingMyCollections || isLoadingAllDevicesForEnrichment || isLoadingSales;
 
     // --- HANDLERS ---
     const handleAcceptCollectionRequest = (submission: DeviceSubmission) => {
@@ -102,7 +109,6 @@ export default function DeliveryDashboardPage() {
         const deviceRef = doc(firestore, `users/${submission.userId}/devices/${submission.id}`);
         const collectionRequestsRef = collection(firestore, 'collection_requests');
         
-        // Optimistically create the collection request
         addDocumentNonBlocking(collectionRequestsRef, {
             deviceId: submission.id,
             userId: submission.userId,
@@ -112,7 +118,6 @@ export default function DeliveryDashboardPage() {
             paymentAmount: 500, // Placeholder amount
         });
 
-        // Optimistically update device status
         updateDocumentNonBlocking(deviceRef, { status: 'collection-in-progress' });
         
         toast({
@@ -161,7 +166,14 @@ export default function DeliveryDashboardPage() {
                         <CardDescription>View and manage device collections and part deliveries.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         {!isUserLoading && !user && (
+                         {!isReady && (
+                            <div className="space-y-4">
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-48 w-full" />
+                            </div>
+                         )}
+
+                         {isReady && !user && (
                              <Alert>
                                 <Truck className="h-4 w-4" />
                                 <AlertTitle>Become a Partner!</AlertTitle>
@@ -171,7 +183,7 @@ export default function DeliveryDashboardPage() {
                             </Alert>
                         )}
                         
-                        { user && (
+                        { isReady && user && (
                         <Tabs defaultValue="my-collections">
                             <TabsList className="grid w-full grid-cols-3">
                                 <TabsTrigger value="my-collections">My Collections</TabsTrigger>
@@ -326,4 +338,3 @@ export default function DeliveryDashboardPage() {
         </div>
     );
  
-}
