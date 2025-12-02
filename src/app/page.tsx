@@ -50,9 +50,9 @@ export default function Home() {
             />
           )}
           <div className="container mx-auto px-4 relative">
-            <h2 className="text-4xl md:text-5xl font-bold font-headline">Give Old Phones a New Purpose</h2>
+            <h2 className="text-4xl md:text-5xl font-bold font-headline">Turning yesterday’s waste into tomorrow’s resources</h2>
             <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              The smart marketplace for recycled phone parts. Sell your broken devices, find genuine reusable components, and contribute to a sustainable future.
+              Waste isn’t the end — it’s the beginning of something useful
             </p>
             <div className="mt-8 flex justify-center gap-4">
               <Button size="lg" onClick={() => router.push('/sell-device')}>Sell My Device</Button>

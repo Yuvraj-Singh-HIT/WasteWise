@@ -20,7 +20,6 @@ export default function CircuitAnalyzerPage() {
   const [result, setResult] = useState<AnalyzeCircuitBoardOutput | null>(null);
   const [hoveredComponent, setHoveredComponent] = useState<Component | null>(null);
 
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -32,7 +31,7 @@ export default function CircuitAnalyzerPage() {
         const resultStr = reader.result as string;
         setImagePreview(resultStr);
         setImageData(resultStr);
-        setResult(null); 
+        setResult(null);
       };
       reader.readAsDataURL(file);
     }
@@ -75,122 +74,136 @@ export default function CircuitAnalyzerPage() {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold font-headline">Circuit Board Analyzer</h1>
-            <p className="mt-2 text-lg text-muted-foreground">Upload a photo of a PCB, and our AI will identify and locate its key components.</p>
+          <h1 className="text-4xl font-bold font-headline">Circuit Board Analyzer</h1>
+          <p className="mt-2 text-lg text-muted-foreground">
+            Upload a photo of a PCB, and our AI will identify and locate its key components.
+          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
-            <Card className="lg:col-span-2 h-fit">
-                <CardHeader>
-                    <CardTitle>1. Upload Image</CardTitle>
-                    <CardDescription>Select an image of a circuit board for analysis.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div
-                        className="w-full h-64 border-2 border-dashed border-muted-foreground/50 rounded-lg flex items-center justify-center bg-muted/20 cursor-pointer hover:bg-muted/40 transition-colors"
-                        onClick={handleUploadClick}
-                    >
-                        {imagePreview ? (
-                        <img src={imagePreview} alt="Circuit board preview" className="h-full w-full object-contain rounded-lg" />
-                        ) : (
-                        <div className="text-center text-muted-foreground">
-                            <Camera className="mx-auto h-12 w-12" />
-                            <p>Click to upload a photo</p>
+          <Card className="lg:col-span-2 h-fit">
+            <CardHeader>
+              <CardTitle>1. Upload Image</CardTitle>
+              <CardDescription>Select an image of a circuit board for analysis.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div
+                className="w-full h-64 border-2 border-dashed border-muted-foreground/50 rounded-lg flex items-center justify-center bg-muted/20 cursor-pointer hover:bg-muted/40 transition-colors"
+                onClick={handleUploadClick}
+              >
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Circuit board preview" 
+                    className="h-full w-full object-contain rounded-lg" 
+                  />
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <Camera className="mx-auto h-12 w-12" />
+                    <p>Click to upload a photo</p>
+                  </div>
+                )}
+              </div>
+              <Input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+                accept="image/*"
+              />
+              <Button 
+                className="w-full" 
+                size="lg"
+                onClick={handleSubmit}
+                disabled={!imageData || isAnalyzing}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : 'Analyze Circuit Board'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <div className="lg:col-span-3">
+            <Card className="min-h-[400px]">
+              <CardHeader>
+                <CardTitle>2. Analysis Results</CardTitle>
+                <CardDescription>Identified components will be displayed here. Hover over the image or list for details.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isAnalyzing && (
+                  <div className="flex flex-col items-center justify-center gap-4 text-center h-full min-h-[300px]">
+                    <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                    <h2 className="text-2xl font-semibold">Running Analysis...</h2>
+                    <p className="text-muted-foreground">Our AI is identifying components and their functions.</p>
+                  </div>
+                )}
+
+                {!isAnalyzing && result && imagePreview && (
+                  <div className="grid gap-6 @container">
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                      <Image 
+                        src={imagePreview} 
+                        alt="Analyzed circuit board" 
+                        fill 
+                        style={{ objectFit: 'contain' }}
+                        sizes="100%"
+                        priority
+                      />
+                      {result.components.map((component, index) => (
+                        <div
+                          key={`${component.componentName}-${component.boundingBox.x}-${component.boundingBox.y}-${component.boundingBox.width}-${component.boundingBox.height}-${index}`}
+                          className="absolute border-2 transition-all duration-200"
+                          style={{
+                            left: `${component.boundingBox.x}%`,
+                            top: `${component.boundingBox.y}%`,
+                            width: `${component.boundingBox.width}%`,
+                            height: `${component.boundingBox.height}%`,
+                            borderColor: hoveredComponent === component ? 'hsl(var(--primary))' : 'hsla(var(--primary), 0.5)',
+                            backgroundColor: hoveredComponent === component ? 'hsla(var(--primary), 0.2)' : 'hsla(var(--primary), 0.1)',
+                          }}
+                          onMouseEnter={() => setHoveredComponent(component)}
+                          onMouseLeave={() => setHoveredComponent(null)}
+                        >
+                          <span 
+                            className="absolute -top-6 left-0 text-xs bg-primary text-primary-foreground px-1 py-0.5 rounded-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ opacity: hoveredComponent === component ? 1 : 0 }}
+                          >
+                            {component.componentName}
+                          </span>
                         </div>
-                        )}
+                      ))}
                     </div>
-                    <Input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleImageChange}
-                        className="hidden"
-                        accept="image/*"
-                    />
-                    <Button 
-                        className="w-full" 
-                        size="lg"
-                        onClick={handleSubmit}
-                        disabled={!imageData || isAnalyzing}
-                    >
-                        {isAnalyzing ? (
-                            <>
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                Analyzing...
-                            </>
-                        ) : 'Analyze Circuit Board'}
-                    </Button>
-                </CardContent>
+                    <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 gap-2">
+                      {result.components.map((component, index) => (
+                        <div
+                          key={`${component.componentName}-${component.boundingBox.x}-${component.boundingBox.y}-${component.boundingBox.width}-${component.boundingBox.height}-list-${index}`}
+                          className={`p-2 rounded-lg border cursor-pointer transition-all ${hoveredComponent === component ? 'bg-muted shadow-md' : ''}`}
+                          onMouseEnter={() => setHoveredComponent(component)}
+                          onMouseLeave={() => setHoveredComponent(null)}
+                        >
+                          <p className="font-bold">{component.componentName}</p>
+                          <p className="text-sm text-muted-foreground">{component.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {!isAnalyzing && !result && (
+                  <div className="text-center text-muted-foreground py-16 px-8 border-2 border-dashed rounded-lg min-h-[300px] flex flex-col justify-center items-center">
+                    <Cpu className="h-12 w-12 mb-4" />
+                    <h3 className="text-lg font-semibold">Awaiting Analysis</h3>
+                    <p className="mt-2 text-sm max-w-sm mx-auto">
+                      Upload an image of a Printed Circuit Board (PCB) and click "Analyze" to see the results.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
             </Card>
-
-            <div className="lg:col-span-3">
-                <Card className="min-h-[400px]">
-                    <CardHeader>
-                        <CardTitle>2. Analysis Results</CardTitle>
-                        <CardDescription>Identified components will be displayed here. Hover over the image or list for details.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                         {isAnalyzing && (
-                            <div className="flex flex-col items-center justify-center gap-4 text-center h-full min-h-[300px]">
-                                <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                                <h2 className="text-2xl font-semibold">Running Analysis...</h2>
-                                <p className="text-muted-foreground">Our AI is identifying components and their functions.</p>
-                            </div>
-                        )}
-
-                        {!isAnalyzing && result && imagePreview && (
-                            <div className="grid gap-6 @container">
-                                <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                                    <Image src={imagePreview} alt="Analyzed circuit board" layout="fill" objectFit="contain" />
-                                    {result.components.map((component) => (
-                                        <div
-                                            key={component.componentName + component.boundingBox.x}
-                                            className="absolute border-2 transition-all duration-200"
-                                            style={{
-                                                left: `${component.boundingBox.x}%`,
-                                                top: `${component.boundingBox.y}%`,
-                                                width: `${component.boundingBox.width}%`,
-                                                height: `${component.boundingBox.height}%`,
-                                                borderColor: hoveredComponent === component ? 'hsl(var(--primary))' : 'hsla(var(--primary), 0.5)',
-                                                backgroundColor: hoveredComponent === component ? 'hsla(var(--primary), 0.2)' : 'hsla(var(--primary), 0.1)',
-                                            }}
-                                            onMouseEnter={() => setHoveredComponent(component)}
-                                            onMouseLeave={() => setHoveredComponent(null)}
-                                        >
-                                            <span className="absolute -top-6 left-0 text-xs bg-primary text-primary-foreground px-1 py-0.5 rounded-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity"
-                                                style={{ opacity: hoveredComponent === component ? 1 : 0 }}
-                                            >
-                                                {component.componentName}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 gap-2">
-                                     {result.components.map((component) => (
-                                        <div
-                                            key={component.componentName + component.boundingBox.x + 'list'}
-                                            className={`p-2 rounded-lg border cursor-pointer transition-all ${hoveredComponent === component ? 'bg-muted shadow-md' : ''}`}
-                                            onMouseEnter={() => setHoveredComponent(component)}
-                                            onMouseLeave={() => setHoveredComponent(null)}
-                                        >
-                                            <p className="font-bold">{component.componentName}</p>
-                                            <p className="text-sm text-muted-foreground">{component.description}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        {!isAnalyzing && !result && (
-                            <div className="text-center text-muted-foreground py-16 px-8 border-2 border-dashed rounded-lg min-h-[300px] flex flex-col justify-center items-center">
-                                <Cpu className="h-12 w-12 mb-4" />
-                                <h3 className="text-lg font-semibold">Awaiting Analysis</h3>
-                                <p className="mt-2 text-sm max-w-sm mx-auto">
-                                    Upload an image of a Printed Circuit Board (PCB) and click "Analyze" to see the results.
-                                </p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
+          </div>
         </div>
       </main>
     </div>
