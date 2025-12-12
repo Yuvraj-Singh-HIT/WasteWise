@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
 
 export const metadata: Metadata = {
   title: 'WasteWise - Recycle and Resell Phone Parts',
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <FirebaseClientProvider>
           {children}
+          <WhatsAppButton />
         </FirebaseClientProvider>
         <Toaster />
       </body>
