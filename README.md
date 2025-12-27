@@ -9,7 +9,7 @@
 
 **A revolutionary platform connecting e-waste sellers with recycled parts buyers**
 
-[🚀 Getting Started](#-getting-started) • [✨ Features](#-features) • [🛠️ Tech Stack](#️-tech-stack) • [📁 Project Structure](#-project-structure) • [🤝 Contributing](#-contributing)
+[🚀 Getting Started](#-getting-started) • [✨ Features](#-features) • [🛠️ Tech Stack](#️-tech-stack) • [👥 Team](#-team) • [📁 Project Structure](#-project-structure) • [🤝 Contributing](#-contributing)
 
 ---
 
@@ -115,6 +115,63 @@ graph LR
 </td>
 </tr>
 </table>
+
+---
+
+## 👥 Team
+
+Meet the brilliant minds behind WasteWise:
+
+<table>
+<tr>
+<td align="center" width="25%">
+<img src="https://github.com/Yuvraj-Singh-HIT.png" width="100px;" alt="Yuvraj Singh"/><br />
+<sub><b>Yuvraj Singh</b></sub><br />
+<a href="https://github.com/Yuvraj-Singh-HIT">
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white" alt="GitHub"/>
+</a><br />
+<sub>🤖 <b>AI/ML</b></sub><br />
+<sup>Computer Vision Models • Waste Classification System • Model Training & Optimization • Genkit AI Flows</sup>
+</td>
+<td align="center" width="25%">
+<img src="https://github.com/AshCodeX025.png" width="100px;" alt="Ashmita Ray"/><br />
+<sub><b>Ashmita Ray</b></sub><br />
+<a href="https://github.com/AshCodeX025">
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white" alt="GitHub"/>
+</a><br />
+<sub>🎨 <b>Frontend Architect</b></sub><br />
+<sup>UI/UX Implementation • React Components • Tailwind Styling • Responsive Design • User Experience</sup>
+</td>
+<td align="center" width="25%">
+<img src="https://github.com/santanu0501.png" width="100px;" alt="Santanu Choudhary"/><br />
+<sub><b>Santanu Choudhary</b></sub><br />
+<a href="https://github.com/santanu0501">
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white" alt="GitHub"/>
+</a><br />
+<sub>⚙️ <b>Backend Engineer</b></sub><br />
+<sup>Firebase Integration • API Routes • Authentication System • Database Architecture • Server Logic</sup>
+</td>
+<td align="center" width="25%">
+<img src="https://github.com/DigantaParui.png" width="100px;" alt="Diganta Parui"/><br />
+<sub><b>Diganta Parui</b></sub><br />
+<a href="https://github.com/DigantaParui">
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white" alt="GitHub"/>
+</a><br />
+<sub>🔧 <b>Full Stack Developer</b></sub><br />
+<sup>Feature Integration • Parts Marketplace • Testing & QA • Performance Optimization • DevOps</sup>
+</td>
+</tr>
+</table>
+
+### 🎯 Individual Contributions
+
+**Yuvraj Singh** - Built the core AI pipeline for waste identification, implementing computer vision models using Google's Gemini AI. Developed the recyclability scoring algorithm and trained models for device type classification with 95%+ accuracy.
+
+**Ashmita Ray** - Designed and implemented the entire frontend interface with Next.js 15 and React. Created reusable UI components with Radix UI and Tailwind CSS, ensuring a seamless user experience across all device types.
+
+**Santanu Choudhary** - Architected the backend infrastructure using Firebase services. Implemented secure authentication, real-time database operations, and RESTful API routes for seamless data flow between frontend and AI services.
+
+**Diganta Parui** - Integrated the parts marketplace functionality, connecting sellers with buyers. Developed the QR code authentication system, implemented comprehensive testing suites, and optimized application performance.
 
 ---
 
