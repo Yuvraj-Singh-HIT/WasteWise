@@ -326,25 +326,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-## 📧 Contact & Support
-
-<p align="center">
-  <a href="mailto:support@wastewise.com">
-    <img src="https://img.shields.io/badge/Email-support%40wastewise.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/>
-  </a>
-  <a href="https://wastewise.com">
-    <img src="https://img.shields.io/badge/Website-wastewise.com-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website"/>
-  </a>
-  <a href="https://twitter.com/wastewise">
-    <img src="https://img.shields.io/badge/Twitter-@WasteWise-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"/>
-  </a>
-  <a href="https://discord.gg/wastewise">
-    <img src="https://img.shields.io/badge/Discord-Join_Us-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"/>
-  </a>
-</p>
-
----
-
 <p align="center">
   <b>🌟 Star us on GitHub — it motivates us a lot!</b>
 </p>
